@@ -6,15 +6,10 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eon.applypayment.vo.GetUtrnRequest;
-import com.eon.applypayment.vo.GetUtrnResponse;
 import com.eon.applypayment.vo.PostBalanceRequest;
 import com.eon.applypayment.vo.PostUtrnRequest;
 import com.eon.applypayment.vo.TransactionDetail;
