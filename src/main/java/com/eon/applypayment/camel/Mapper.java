@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import com.eon.applypayment.util.ApplyPaymentStatus;
 import com.eon.applypayment.util.Utilz;
 import com.eon.applypayment.vo.ApplyPaymentStatusEvent;
-import com.eon.applypayment.vo.ApplyPaymentStatusEvents;
 import com.eon.applypayment.vo.PostBalanceRequest;
 import com.eon.applypayment.vo.PostUtrnRequest;
 import com.eon.applypayment.vo.TransactionDetail;
@@ -21,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class Mapper {
 
-	public String mapPaymentUtrnRequested(TransactionDetail transactionDetail)
+	public ApplyPaymentStatusEvent mapPaymentUtrnRequested(TransactionDetail transactionDetail)
 			throws JsonParseException, JsonMappingException, IOException {
-		ApplyPaymentStatusEvents applyPaymentStatusEvents = new ApplyPaymentStatusEvents();
+
 		ApplyPaymentStatusEvent applyPaymentStatusEvent = new ApplyPaymentStatusEvent();
 		applyPaymentStatusEvent.setEventDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.PaymentUtrnRequested.toString());
@@ -31,64 +30,57 @@ public class Mapper {
 		applyPaymentStatusEvent.setReason("Payment");
 		applyPaymentStatusEvent.setTransactionId(getTransactionId());
 		applyPaymentStatusEvent.setValue("" + transactionDetail.getValue());
-		applyPaymentStatusEvents.setId(getId(transactionDetail.getPaygProductId()));
-		applyPaymentStatusEvents.setApplyPaymentStatusEvent(applyPaymentStatusEvent);
 		ObjectMapper Obj = new ObjectMapper();
 
-		return Obj.writeValueAsString(applyPaymentStatusEvents);
+		return applyPaymentStatusEvent;
 
 	}
 
-	public String mapUtrnReceived(PostUtrnRequest postUtrnRequest)
+	public ApplyPaymentStatusEvent mapUtrnReceived(PostUtrnRequest postUtrnRequest)
 			throws JsonParseException, JsonMappingException, IOException {
-		ApplyPaymentStatusEvents applyPaymentStatusEvents = new ApplyPaymentStatusEvents();
 		ApplyPaymentStatusEvent applyPaymentStatusEvent = new ApplyPaymentStatusEvent();
 		applyPaymentStatusEvent.setEventDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.UtrnReceived.toString());
 		applyPaymentStatusEvent.setPaygProductId(postUtrnRequest.getPaygProductId());
 		applyPaymentStatusEvent.setReason("Payment");
 		applyPaymentStatusEvent.setUtrn(postUtrnRequest.getUtrn());
+		applyPaymentStatusEvent.setTransactionId(postUtrnRequest.getTransactionId());
 		applyPaymentStatusEvent.setValue("" + postUtrnRequest.getValue());
-		applyPaymentStatusEvents.setId(getId(postUtrnRequest.getPaygProductId()));
-		applyPaymentStatusEvents.setApplyPaymentStatusEvent(applyPaymentStatusEvent);
+
 		ObjectMapper Obj = new ObjectMapper();
-		return Obj.writeValueAsString(applyPaymentStatusEvents);
+		return applyPaymentStatusEvent;
 	}
 
-	public String mapApplyPaymentUtrnRequested(PostUtrnRequest postUtrnRequest)
+	public ApplyPaymentStatusEvent mapApplyPaymentUtrnRequested(PostUtrnRequest postUtrnRequest)
 			throws JsonParseException, JsonMappingException, IOException {
-		ApplyPaymentStatusEvents applyPaymentStatusEvents = new ApplyPaymentStatusEvents();
 		ApplyPaymentStatusEvent applyPaymentStatusEvent = new ApplyPaymentStatusEvent();
 		applyPaymentStatusEvent.setEventDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.ApplyUtrnRequested.toString());
 		applyPaymentStatusEvent.setPaygProductId(postUtrnRequest.getPaygProductId());
 		applyPaymentStatusEvent.setReason("Payment");
+		applyPaymentStatusEvent.setTransactionId(postUtrnRequest.getTransactionId());
 		applyPaymentStatusEvent.setUtrn(postUtrnRequest.getUtrn());
-		applyPaymentStatusEvents.setId(getId(postUtrnRequest.getPaygProductId()));
-		applyPaymentStatusEvents.setApplyPaymentStatusEvent(applyPaymentStatusEvent);
+		applyPaymentStatusEvent.setValue(String.valueOf(postUtrnRequest.getValue()));
 		ObjectMapper Obj = new ObjectMapper();
-		return Obj.writeValueAsString(applyPaymentStatusEvents);
+		return applyPaymentStatusEvent;
 	}
 
-	public String mapUtrnApplied(UtrnAppliedConfirmationRequest utrnAppliedConfirmation)
+	public ApplyPaymentStatusEvent mapUtrnApplied(UtrnAppliedConfirmationRequest utrnAppliedConfirmation)
 			throws JsonParseException, JsonMappingException, IOException {
-		ApplyPaymentStatusEvents applyPaymentStatusEvents = new ApplyPaymentStatusEvents();
 		ApplyPaymentStatusEvent applyPaymentStatusEvent = new ApplyPaymentStatusEvent();
 		applyPaymentStatusEvent.setEventDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.UtrnApplied.toString());
 		applyPaymentStatusEvent.setPaygProductId(utrnAppliedConfirmation.getPaygProductId());
 		applyPaymentStatusEvent.setReason("Payment");
 		applyPaymentStatusEvent.setUtrn(utrnAppliedConfirmation.getUtrn());
+		applyPaymentStatusEvent.setTransactionId(utrnAppliedConfirmation.getTransactionId());
 		applyPaymentStatusEvent.setValue("" + utrnAppliedConfirmation.getValue());
-		applyPaymentStatusEvents.setId(getId(utrnAppliedConfirmation.getPaygProductId()));
-		applyPaymentStatusEvents.setApplyPaymentStatusEvent(applyPaymentStatusEvent);
 		ObjectMapper Obj = new ObjectMapper();
-		return Obj.writeValueAsString(applyPaymentStatusEvents);
+		return applyPaymentStatusEvent;
 	}
 
-	public String mapPostMeterBalance(PostBalanceRequest postBalanceRequest)
+	public ApplyPaymentStatusEvent mapPostMeterBalance(PostBalanceRequest postBalanceRequest)
 			throws JsonParseException, JsonMappingException, IOException {
-		ApplyPaymentStatusEvents applyPaymentStatusEvents = new ApplyPaymentStatusEvents();
 		ApplyPaymentStatusEvent applyPaymentStatusEvent = new ApplyPaymentStatusEvent();
 		applyPaymentStatusEvent.setEventDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.MeterBalanceReceived.toString());
@@ -97,20 +89,19 @@ public class Mapper {
 		applyPaymentStatusEvent.setMeterBalanceDateTime(postBalanceRequest.getMeterBalanceDate());
 		applyPaymentStatusEvent.setMeterBalance(postBalanceRequest.getMeterBalance());
 		applyPaymentStatusEvent.setTransactionId(postBalanceRequest.getTransactionId());
-		applyPaymentStatusEvents.setId(getId(postBalanceRequest.getPaygProductId()));
-		applyPaymentStatusEvents.setApplyPaymentStatusEvent(applyPaymentStatusEvent);
 		ObjectMapper Obj = new ObjectMapper();
-		return Obj.writeValueAsString(applyPaymentStatusEvents);
+		return applyPaymentStatusEvent;
 	}
 
-	private String getId(String paygProductId) {
+	public String getPaygProductId(TransactionDetail transactionDetail) {
 		int year = LocalDate.now().getYear();
 		int month = LocalDate.now().getMonthOfYear();
-		String id = new StringBuffer().append(paygProductId).append("::").append("E").append("::").append(year)
-				.append("::").append(month).toString();
+		String id = new StringBuffer().append(transactionDetail.getPaygProductId()).append("::").append("E")
+				.append("::").append(year).append("::").append(month).toString();
 
 		return id;
 	}
+
 	public static String getTransactionId() {
 		Random rnd = new Random();
 		int number = rnd.nextInt(9999999);

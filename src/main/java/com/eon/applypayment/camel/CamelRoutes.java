@@ -6,7 +6,9 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaComponent;
+import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.component.properties.PropertiesComponent;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +22,7 @@ public class CamelRoutes extends RouteBuilder {
 
 	@PostConstruct
 	public void setup() {
-		PropertiesComponent pc = getContext().getComponent("properties",
-				PropertiesComponent.class);
+		PropertiesComponent pc = getContext().getComponent("properties", PropertiesComponent.class);
 		pc.setLocation("classpath:application.properties");
 
 		// setup kafka component with the brokers
@@ -33,64 +34,63 @@ public class CamelRoutes extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		from("direct:applyPayment").to("direct:getUtrn");
+		// String Key = "4444::E::2019::3";
 		configureGetUtrn();
 		configureHandleUtrnPosted();
 		configureHandleUtrnApplied();
 		configureHandleMeterBalancePosted();
 	}
-	
-	public void configureHandleUtrnApplied(){
-		from("direct:handleUtrnApplied")
-		.bean(mapper, "mapUtrnApplied")
-		.log("create kafka event for utrn applied")
-		.to("kafka:{{kafka.applyPaymentStatus.topic}}");
+
+	public void configureHandleUtrnApplied() {
+
+		from("direct:handleUtrnApplied").bean(mapper, "mapUtrnApplied").log("create kafka event for utrn applied")
+				.setHeader(KafkaConstants.KEY, simple("${body.paygProductId}::E::${date:now:yyyy}::${date:now:MM}"))
+				.marshal().json(JsonLibrary.Jackson)
+				.to("kafka:{{kafka.applyPaymentStatus.topic}}");
 	}
-	
-	public void configureHandleMeterBalancePosted(){
-		from("direct:handleMeterBalancePosted")
-		.bean(mapper, "mapPostMeterBalance")
-		.log("create kafka event for meter balance posted")
-		.to("kafka:{{kafka.applyPaymentStatus.topic}}");
+
+	public void configureHandleMeterBalancePosted() {
+		from("direct:handleMeterBalancePosted").bean(mapper, "mapPostMeterBalance")
+				.log("create kafka event for meter balance posted")
+				.setHeader(KafkaConstants.KEY, simple("${body.paygProductId}::E::${date:now:yyyy}::${date:now:MM}"))
+				.marshal().json(JsonLibrary.Jackson)
+				.to("kafka:{{kafka.applyPaymentStatus.topic}}");
 	}
 
 	public void configureHandleUtrnPosted() {
-		from("direct:handleUtrnPosted")
-				.wireTap("direct:utrnReceivedEvent")
-				.enrich("direct:invokeApplyUtrn",
-						new AddHeadersAggregationStrategy()).choice().when()
+		from("direct:handleUtrnPosted").wireTap("direct:utrnReceivedEvent")
+				.enrich("direct:invokeApplyUtrn", new AddHeadersAggregationStrategy()).choice().when()
 				.simple("${header.resource_CamelHttpResponseCode} == '200'")
-				.log("apply utrn requested successfully ${body}")
-				.bean(mapper, "mapApplyPaymentUtrnRequested")
+				.log("apply utrn requested successfully ${body}").bean(mapper, "mapApplyPaymentUtrnRequested")
 				.log("kafka event ready to be created - ${body}")
+				.setHeader(KafkaConstants.KEY, simple("${body.paygProductId}::E::${date:now:yyyy}::${date:now:MM}"))
+				.marshal().json(JsonLibrary.Jackson)
 				.to("kafka:{{kafka.applyPaymentStatus.topic}}");
 
-		from("direct:utrnReceivedEvent").bean(mapper, "mapUtrnReceived")
-				.log("create kafka event for utrn received")
+		from("direct:utrnReceivedEvent").bean(mapper, "mapUtrnReceived").log("create kafka event for utrn received")
+				.setHeader(KafkaConstants.KEY, simple("${body.paygProductId}::E::${date:now:yyyy}::${date:now:MM}"))
+				.marshal().json(JsonLibrary.Jackson)
 				.to("kafka:{{kafka.applyPaymentStatus.topic}}");
 
-		from("direct:invokeApplyUtrn")
-				.log("invoke apply utrn")
-				.setHeader(
-						Exchange.HTTP_URI,
+		from("direct:invokeApplyUtrn").log("invoke apply utrn")
+				.setHeader(Exchange.HTTP_URI,
 						simple("{{midos.applyUtrn.url}}?paygProductId=${body.paygProductId}&value=${body.value}"
 								+ "&utrn=${body.utrn}&action=apply"))
 				.transform().simple("${null}").to("http://ignored");
 	}
 
 	public void configureGetUtrn() {
-		from("direct:getUtrn")
-				.log("request MIDOS to get UTRN")
-				.enrich("direct:invokeGetUtrn",
-						new AddHeadersAggregationStrategy()).choice().when()
-				.simple("${header.resource_CamelHttpResponseCode} == '200'")
-				.log("utrn requested successfully ${body}")
-				.bean(mapper, "mapPaymentUtrnRequested")
-				.log("kafka event ready to be created - ${body}")
+
+		from("direct:getUtrn").log("request MIDOS to get UTRN")
+				.enrich("direct:invokeGetUtrn", new AddHeadersAggregationStrategy()).choice().when()
+				.simple("${header.resource_CamelHttpResponseCode} == '200'").log("utrn requested successfully ${body}")
+				.bean(mapper, "mapPaymentUtrnRequested").log("kafka event ready to be created - ${body}")
+				.setHeader(KafkaConstants.KEY, simple("${body.paygProductId}::E::${date:now:yyyy}::${date:now:MM}"))
+				.marshal().json(JsonLibrary.Jackson)
 				.to("kafka:{{kafka.applyPaymentStatus.topic}}");
 
 		from("direct:invokeGetUtrn")
-				.setHeader(
-						Exchange.HTTP_URI,
+				.setHeader(Exchange.HTTP_URI,
 						simple("{{midos.getUtrn.url}}?paygProductId=${body.paygProductId}&value=${body.value}"))
 				.transform().simple("${null}").to("http://ignored");
 	}

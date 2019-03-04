@@ -1,17 +1,61 @@
 package com.eon.applypayment.vo;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
 public class ApplyPaymentStatusEvent {
 
+	public String getEventType() {
+		return eventType;
+	}
+	public void setEventType(String eventType) {
+		this.eventType = eventType;
+	}
+	public String getPaygProductId() {
+		return paygProductId;
+	}
+	public void setPaygProductId(String paygProductId) {
+		this.paygProductId = paygProductId;
+	}
+	public String getEventDateTime() {
+		return eventDateTime;
+	}
+	public void setEventDateTime(String eventDateTime) {
+		this.eventDateTime = eventDateTime;
+	}
+	public String getTransactionId() {
+		return transactionId;
+	}
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getUtrn() {
+		return utrn;
+	}
+	public void setUtrn(String utrn) {
+		this.utrn = utrn;
+	}
+	public float getMeterBalance() {
+		return meterBalance;
+	}
+	public void setMeterBalance(float meterBalance) {
+		this.meterBalance = meterBalance;
+	}
+	public String getMeterBalanceDateTime() {
+		return meterBalanceDateTime;
+	}
+	public void setMeterBalanceDateTime(String meterBalanceDateTime) {
+		this.meterBalanceDateTime = meterBalanceDateTime;
+	}
 	/**
 	 * 
 	 */

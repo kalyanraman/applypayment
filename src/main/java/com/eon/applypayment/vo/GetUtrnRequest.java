@@ -1,16 +1,19 @@
 package com.eon.applypayment.vo;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
 public class GetUtrnRequest {
 
+	public String getPaygProductId() {
+		return paygProductId;
+	}
+	public void setPaygProductId(String paygProductId) {
+		this.paygProductId = paygProductId;
+	}
+	public float getValue() {
+		return value;
+	}
+	public void setValue(float value) {
+		this.value = value;
+	}
 	private String paygProductId;
 	private float value;
 

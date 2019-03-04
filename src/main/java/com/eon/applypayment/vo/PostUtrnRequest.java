@@ -1,10 +1,31 @@
 package com.eon.applypayment.vo;
 
-import lombok.Data;
-
-@Data
 public class PostUtrnRequest {
 
+	public String getPaygProductId() {
+		return paygProductId;
+	}
+	public void setPaygProductId(String paygProductId) {
+		this.paygProductId = paygProductId;
+	}
+	public String getTransactionId() {
+		return transactionId;
+	}
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+	public String getUtrn() {
+		return utrn;
+	}
+	public void setUtrn(String utrn) {
+		this.utrn = utrn;
+	}
+	public float getValue() {
+		return value;
+	}
+	public void setValue(float value) {
+		this.value = value;
+	}
 	private String paygProductId;
 	private String transactionId;
 	private String utrn;
