@@ -30,7 +30,7 @@ public class ApplyPaymentController {
 	public PaymentResponse applyPayment(@Valid @RequestBody TransactionDetail transactionDetail) {
 		logger.info("ApplyPaymentController class of applyPayment method start :{}", transactionDetail.toString());
 		producerTemplate.sendBody("direct:applyPayment", transactionDetail);
-		return new PaymentResponse(HttpStatus.OK.value(), "success");
+		return new PaymentResponse(0, "success");
 
 	}
 
