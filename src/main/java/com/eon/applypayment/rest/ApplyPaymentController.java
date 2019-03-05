@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eon.applypayment.vo.PaymentResponse;
 import com.eon.applypayment.vo.PostBalanceRequest;
 import com.eon.applypayment.vo.PostUtrnRequest;
 import com.eon.applypayment.vo.TransactionDetail;
@@ -26,10 +27,10 @@ public class ApplyPaymentController {
 	ProducerTemplate producerTemplate;
 
 	@PostMapping(consumes = "application/json", path = "/payments")
-	public ResponseEntity<HttpStatus> applyPayment(@Valid @RequestBody TransactionDetail transactionDetail) {
+	public PaymentResponse applyPayment(@Valid @RequestBody TransactionDetail transactionDetail) {
 		logger.info("ApplyPaymentController class of applyPayment method start :{}", transactionDetail.toString());
 		producerTemplate.sendBody("direct:applyPayment", transactionDetail);
-		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+		return new PaymentResponse(HttpStatus.OK.value(), "success");
 
 	}
 

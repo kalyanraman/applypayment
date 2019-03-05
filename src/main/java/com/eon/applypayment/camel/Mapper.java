@@ -30,8 +30,6 @@ public class Mapper {
 		applyPaymentStatusEvent.setReason("Payment");
 		applyPaymentStatusEvent.setTransactionId(getTransactionId());
 		applyPaymentStatusEvent.setValue("" + transactionDetail.getValue());
-		ObjectMapper Obj = new ObjectMapper();
-
 		return applyPaymentStatusEvent;
 
 	}
@@ -46,8 +44,6 @@ public class Mapper {
 		applyPaymentStatusEvent.setUtrn(postUtrnRequest.getUtrn());
 		applyPaymentStatusEvent.setTransactionId(postUtrnRequest.getTransactionId());
 		applyPaymentStatusEvent.setValue("" + postUtrnRequest.getValue());
-
-		ObjectMapper Obj = new ObjectMapper();
 		return applyPaymentStatusEvent;
 	}
 
@@ -61,7 +57,6 @@ public class Mapper {
 		applyPaymentStatusEvent.setTransactionId(postUtrnRequest.getTransactionId());
 		applyPaymentStatusEvent.setUtrn(postUtrnRequest.getUtrn());
 		applyPaymentStatusEvent.setValue(String.valueOf(postUtrnRequest.getValue()));
-		ObjectMapper Obj = new ObjectMapper();
 		return applyPaymentStatusEvent;
 	}
 
@@ -75,7 +70,6 @@ public class Mapper {
 		applyPaymentStatusEvent.setUtrn(utrnAppliedConfirmation.getUtrn());
 		applyPaymentStatusEvent.setTransactionId(utrnAppliedConfirmation.getTransactionId());
 		applyPaymentStatusEvent.setValue("" + utrnAppliedConfirmation.getValue());
-		ObjectMapper Obj = new ObjectMapper();
 		return applyPaymentStatusEvent;
 	}
 
@@ -86,10 +80,9 @@ public class Mapper {
 		applyPaymentStatusEvent.setEventType(ApplyPaymentStatus.MeterBalanceReceived.toString());
 		applyPaymentStatusEvent.setPaygProductId(postBalanceRequest.getPaygProductId());
 		applyPaymentStatusEvent.setReason("Payment");
-		applyPaymentStatusEvent.setMeterBalanceDateTime(postBalanceRequest.getMeterBalanceDate());
+		applyPaymentStatusEvent.setMeterBalanceDateTime(Utilz.getCurrentDate());
 		applyPaymentStatusEvent.setMeterBalance(postBalanceRequest.getMeterBalance());
 		applyPaymentStatusEvent.setTransactionId(postBalanceRequest.getTransactionId());
-		ObjectMapper Obj = new ObjectMapper();
 		return applyPaymentStatusEvent;
 	}
 
