@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Template
+labels:
+  app: apply-payments-service
+  name: apply-payments-service   
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: apply-payments-service
+    name: apply-payments-service
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+    labels:
+      app: apply-payments-service
+    name: apply-payments-service
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: 'apply-payments-service:latest'
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: 'http://infygit.ad.infosys.com/eon-uk/applypayment.git'
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: 's2i-java:2.3.1'
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+      - github:
+          secret: upWuBWwcSsKb-vIuLozx
+        type: GitHub
+      - generic:
+          secret: fRQXKObCxGXwoTtREKgB
+        type: Generic
+      - type: ConfigChange
+      - type: ImageChange
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: apply-payments-service
+    name: apply-payments-service
+  spec:
+    ports:
+      - name: 8081-tcp
+        port: 8081
+        protocol: TCP
+        targetPort: 8081
+    selector:
+      deploymentconfig: apply-payments-service
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: apply-payments-service
+    name: apply-payments-service
+  spec:
+    port:
+      targetPort: 8081-tcp
+    to:
+      kind: Service
+      name: apply-payments-service
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: apply-payments-service
+    name: apply-payments-service
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: apply-payments-service
+      deploymentconfig: apply-payments-service
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: apply-payments-service
+          deploymentconfig: apply-payments-service
+      spec:
+        containers:
+          - env:
+            image:
+            imagePullPolicy: Always
+            name: apply-payments-service
+            ports:
+              - containerPort: 8081
+                protocol: TCP
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - name: application-config 
+              mountPath: "/deployments/config" 
+              readOnly: true
+        volumes:
+        - name: application-config
+          configMap:
+            name:  apply-payments-service-config 
+            items:
+            - key: application.properties 
+              path: application.properties               
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+      - type: ConfigChange
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - apply-payments-service
+          from:
+            kind: ImageStreamTag
+            name: 'apply-payments-service:latest'
+        type: ImageChange

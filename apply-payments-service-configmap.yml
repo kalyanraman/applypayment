@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  application.properties: "kafka.host=ip-10-0-1-199.eu-west-2.compute.internal:9092,ip-10-0-1-202.eu-west-2.compute.internal:9092,ip-10-0-6-76.eu-west-2.compute.internal\r\nkafka.port=9092\r\nkafka.applyPaymentStatus.topic=com-eon-payg-events\r\nserver.port=8081\r\nmidos.getUtrn.url=http://midos-stub-service-eon-poc.apppaygservice.net/midos/utrns\r\nmidos.applyUtrn.url=http://midos-stub-service-eon-poc.apppaygservice.net/midos/utrns\r\n"
+kind: ConfigMap
+metadata:
+  name: apply-payments-service-config
+  namespace: eon-poc
